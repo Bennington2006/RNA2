@@ -6,3 +6,4 @@ trimesh
 matplotlib
 Libigl
 numba
+rtree
