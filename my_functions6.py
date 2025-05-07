@@ -167,11 +167,14 @@ def generate_random_spots(mesh, desired_points, oversample_factor=2):
     # Initialize a list to store points inside the mesh
     points_inside_mesh = []
 
+    # Use an independent RNG instance
+    rng = np.random.default_rng()
+
     # Generate points until we have the desired number
     while len(points_inside_mesh) < desired_points:
         # Generate more points than needed to ensure sufficient coverage
         num_points_to_generate = (desired_points - len(points_inside_mesh)) * oversample_factor
-        random_points = np.random.uniform(low=min_bound, high=max_bound, size=(num_points_to_generate, 3))
+        random_points = rng.uniform(low=min_bound, high=max_bound, size=(num_points_to_generate, 3))
 
         # Check which points are inside the mesh
         inside = mesh.contains(random_points)
@@ -212,7 +215,8 @@ def generate_random_spots_with_rtree(mesh, desired_points, oversample_factor=2):
     while len(points_inside_mesh) < desired_points:
         # Generate more points than needed to ensure sufficient coverage
         num_points_to_generate = (desired_points - len(points_inside_mesh)) * oversample_factor
-        random_points = np.random.uniform(low=min_bound, high=max_bound, size=(num_points_to_generate, 3))
+        rng = np.random.default_rng()
+        random_points = rng.uniform(low=min_bound, high=max_bound, size=(num_points_to_generate, 3))
 
         # Check which points are inside the mesh using Rtree
         for point in random_points:
