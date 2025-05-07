@@ -248,22 +248,29 @@ def calculate_max_density(rna_spots, mesh, resolution=1.0):
 def generate_kde_spots3(rna_spots, mesh):
     if not isinstance(mesh, trimesh.Trimesh):
         raise ValueError("The mesh object must be a valid trimesh.Trimesh instance.")
+    
     kde_model = gaussian_kde(rna_spots.T)
     min_bound, max_bound = mesh.bounds
     bbox_volume = np.prod(max_bound - min_bound)
     spots_per_cubi_um = calculate_max_density(rna_spots, mesh)
     desired_points = int(bbox_volume * spots_per_cubi_um)
-    sample_space = np.random.uniform(low=min_bound, high=max_bound, size=(desired_points, 3))
+    
+    # Use an independent RNG instance
+    rng = np.random.default_rng()
+    sample_space = rng.uniform(low=min_bound, high=max_bound, size=(desired_points, 3))
+    
     V = np.array(mesh.vertices)
     F = np.array(mesh.faces)
     W = igl.fast_winding_number_for_meshes(V, F, sample_space)
     inside_mask = W >= 0.5
     points_inside_mesh = sample_space[inside_mask]
+    
     if points_inside_mesh.size == 0:
         raise ValueError("No points inside the mesh. Check the mesh or sampling process.")
+    
     kde_eval = kde_model(points_inside_mesh.T)
     probabilities = kde_eval / np.sum(kde_eval)
-    sampled_indices = np.random.choice(len(points_inside_mesh), len(rna_spots), replace=True, p=probabilities)
+    sampled_indices = rng.choice(len(points_inside_mesh), len(rna_spots), replace=True, p=probabilities)
     return points_inside_mesh[sampled_indices]
 
 
