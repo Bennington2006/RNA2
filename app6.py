@@ -49,7 +49,7 @@ st.write("This app processes RNA colocalization data" \
 
 # Sidebar for user inputs
 st.sidebar.header("Input Parameters")
-num_trials = st.sidebar.number_input("Number of Trials", min_value=1, value=25, step=25)
+num_trials = st.sidebar.number_input("Number of Trials", min_value=1, value=1, step=1)
 coloc_threshold = st.sidebar.number_input("Colocalization Threshold", min_value=0.0, value=1.0, step=0.1)
 
 # File upload section
